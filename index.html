@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estoura Balão dos Micos</title>
+<style>
+:root {
+  --ink:#24345f;
+  --cream:#fffaf0;
+  --panel:rgba(255,255,255,.92);
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0}
+body{
+  overflow:hidden;
+  font-family:"Trebuchet MS",Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 18%,rgba(255,255,255,.85) 0 5%,transparent 5.5%),
+    radial-gradient(circle at 83% 12%,rgba(255,255,255,.72) 0 6%,transparent 6.5%),
+    linear-gradient(180deg,#6dd5fa 0%,#9be7ff 43%,#fff0ba 100%);
+}
+body::before{
+  content:"";
+  position:fixed;inset:auto 0 0;height:20%;
+  background:
+    radial-gradient(ellipse at 10% 100%,#68c96d 0 40%,transparent 41%),
+    radial-gradient(ellipse at 35% 100%,#47b95c 0 42%,transparent 43%),
+    radial-gradient(ellipse at 65% 100%,#68c96d 0 42%,transparent 43%),
+    radial-gradient(ellipse at 90% 100%,#47b95c 0 44%,transparent 45%);
+  pointer-events:none;
+}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr auto;position:relative;z-index:2}
+.flags{position:absolute;top:0;left:0;width:100%;height:58px;display:flex;justify-content:space-around;overflow:hidden;pointer-events:none}
+.flag{width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-top:50px solid;filter:drop-shadow(0 4px 2px rgba(0,0,0,.18))}
+.flag:nth-child(6n+1){border-top-color:#ff6b6b}
+.flag:nth-child(6n+2){border-top-color:#ffd43b}
+.flag:nth-child(6n+3){border-top-color:#4dabf7}
+.flag:nth-child(6n+4){border-top-color:#69db7c}
+.flag:nth-child(6n+5){border-top-color:#b197fc}
+.flag:nth-child(6n){border-top-color:#ff922b}
+header{padding:58px 24px 8px;text-align:center}
+.title-card{
+  display:inline-block;
+  padding:10px 30px 12px;
+  border:4px solid #fff;
+  border-radius:24px;
+  background:linear-gradient(135deg,#fff9db,#ffffff);
+  box-shadow:0 10px 28px rgba(36,52,95,.22), inset 0 -6px 0 rgba(255,212,59,.35);
+}
+h1{margin:0;font-size:clamp(30px,3.5vw,56px);letter-spacing:.5px;color:#234078;text-shadow:0 2px 0 #fff}
+.subtitle{font-size:clamp(15px,1.45vw,23px);font-weight:700;color:#5c6f99;margin-top:4px}
+.corner-controls{
+  position:fixed;
+  top:14px;
+  left:0;
+  right:0;
+  display:block;
+  z-index:30;
+}
+.control{
+  border:2px solid rgba(255,255,255,.9);
+  border-radius:999px;
+  background:rgba(255,255,255,.88);
+  box-shadow:0 6px 16px rgba(36,52,95,.18);
+  font-weight:800;
+  color:#344b7a;
+  padding:6px 12px;
+  font-size:13px;
+  cursor:pointer;
+  transition:.18s;
+}
+.control:hover{transform:translateY(-2px);background:white}
+main{min-height:0;padding:6px 3vw 10px;display:flex;align-items:center;justify-content:center}
+#grid{
+  width:min(1380px,96vw);
+  height:min(655px,70vh);
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  grid-template-rows:repeat(5,1fr);
+  column-gap:clamp(8px,1vw,17px);
+  row-gap:clamp(5px,.7vh,10px);
+  align-items:center;
+}
+.balloon-wrap{height:100%;display:flex;align-items:flex-start;justify-content:center;position:relative}
+.balloon{
+  --c1:#ff6b6b;--c2:#e03131;
+  width:min(96px,7.2vw);
+  aspect-ratio:.82;
+  border:0;cursor:pointer;position:relative;
+  border-radius:50% 50% 46% 46% / 46% 46% 54% 54%;
+  background:
+    radial-gradient(circle at 31% 25%,rgba(255,255,255,.94) 0 7%,rgba(255,255,255,.24) 8% 18%,transparent 19%),
+    linear-gradient(145deg,var(--c1),var(--c2));
+  box-shadow:
+    inset -10px -13px 18px rgba(0,0,0,.18),
+    inset 8px 8px 15px rgba(255,255,255,.16),
+    0 10px 14px rgba(36,52,95,.22);
+  color:#fff;font-size:clamp(22px,2.2vw,36px);font-weight:900;
+  text-shadow:0 3px 2px rgba(0,0,0,.28);
+  animation:float 3.2s ease-in-out infinite;
+  transition:filter .2s,transform .2s;
+}
+.balloon:hover{filter:brightness(1.08);transform:scale(1.07) rotate(-2deg)}
+.balloon::before{
+  content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);
+  width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid var(--c2);
+}
+.balloon::after{
+  content:"";position:absolute;left:50%;top:calc(100% + 4px);width:2px;height:24px;
+  background:rgba(72,69,82,.55);transform-origin:top;transform:rotate(3deg);
+}
+.balloon:nth-child(3n){animation-delay:-1.3s}
+.balloon:nth-child(4n){animation-delay:-2.1s}
+.balloon.used{animation:none;transform:scale(0);opacity:0;pointer-events:none;transition:.34s ease-in}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(1.5deg)}}
+footer{text-align:center;padding:4px 12px 10px;font-weight:800;color:#47608f;text-shadow:0 1px white}
+#overlay{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(27,39,72,.72);backdrop-filter:blur(6px);z-index:20;padding:20px;
+}
+#overlay.show{display:flex;animation:fade .2s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+#card{
+  width:min(930px,92vw);min-height:420px;
+  position:relative;overflow:hidden;text-align:center;
+  border:8px solid white;border-radius:36px;padding:44px 52px 36px;
+  background:
+    radial-gradient(circle at 10% 15%,#fff3bf 0 6px,transparent 7px),
+    radial-gradient(circle at 90% 20%,#d0ebff 0 7px,transparent 8px),
+    radial-gradient(circle at 14% 85%,#d3f9d8 0 7px,transparent 8px),
+    linear-gradient(145deg,#fffdf5,#ffffff);
+  box-shadow:0 25px 70px rgba(0,0,0,.35),inset 0 -10px 0 #ffe066;
+  animation:cardIn .35s cubic-bezier(.2,.9,.2,1.15);
+}
+@keyframes cardIn{from{transform:scale(.72) rotate(-2deg);opacity:0}to{transform:scale(1);opacity:1}}
+.ribbon{
+  display:inline-block;background:linear-gradient(90deg,#ff922b,#ffd43b);
+  color:#633c00;font-size:clamp(25px,3vw,43px);font-weight:1000;
+  padding:10px 28px;border-radius:16px;box-shadow:0 7px 0 #e67700;
+  transform:rotate(-1deg);margin-bottom:32px;
+}
+#text{font-size:clamp(29px,3.2vw,48px);line-height:1.25;font-weight:900;color:#2f4779;max-width:790px;margin:auto}
+.close{
+  margin-top:36px;border:0;border-radius:18px;padding:14px 34px;
+  color:white;background:linear-gradient(135deg,#339af0,#1864ab);
+  box-shadow:0 7px 0 #123e72;font-size:22px;font-weight:900;cursor:pointer;
+}
+.close:active{transform:translateY(5px);box-shadow:0 2px 0 #123e72}
+.confetti{position:fixed;width:11px;height:18px;z-index:30;pointer-events:none;animation:fall 1.25s linear forwards}
+@keyframes fall{from{transform:translateY(-20px) rotate(0);opacity:1}to{transform:translateY(105vh) rotate(720deg);opacity:.1}}
+.pop-piece{position:fixed;width:20px;height:20px;border-radius:50%;z-index:25;pointer-events:none;animation:burst .55s ease-out forwards}
+@keyframes burst{to{transform:translate(var(--x),var(--y)) scale(.2);opacity:0}}
+@media(max-height:760px){
+  header{padding-top:48px}
+  #grid{height:64vh}
+  .balloon{width:min(88px,7vw)}
+  #card{min-height:350px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="flags"><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span></div>
+  <header>
+    <div class="title-card">
+      <h1>🎈 ESTOURA BALÃO DOS MICOS 🎈</h1>
+      <div class="subtitle">Escolha um balão, clique e descubra o desafio!</div>
+    </div>
+    <div class="corner-controls">
+      <button class="control" id="restart" style="position:absolute;left:12px;top:0;">↻ Reiniciar</button>
+      <button class="control" id="fullscreen" style="position:absolute;right:12px;top:0;">⛶ Tela cheia</button>
+    </div>
+  </header>
+
+  <main><div id="grid"></div></main>
+  <footer></footer>
+</div>
+
+<div id="overlay" role="dialog" aria-modal="true">
+  <div id="card">
+    <div class="ribbon">🎉 MICO SORTEADO 🎉</div>
+    <div id="text"></div>
+    <button class="close" id="close">PRÓXIMO BALÃO</button>
+  </div>
+</div>
+
+<script>
+const originalMicos = ["Ande como um robô até voltar ao seu lugar.", "Imite um pato por 15 segundos.", "Caminhe como um dinossauro.", "Dance por 20 segundos.", "Cante um trecho de qualquer música.", "Faça uma propaganda de uma borracha como se fosse um produto revolucionário.", "Faça uma pose de super-herói.", "Conte uma piada.", "Faça uma cara de bravo, feliz, assustado e surpreso.", "Faça o barulho de uma moto acelerando.", "Corra em câmera lenta.", "Ande como um pinguim.", "Cumprimente a sala como se fosse um alienígena.", "Apresente a previsão do tempo de Marte.", "Finja lançar um feitiço em alguém.", "Finja abrir um presente maravilhoso.", "Comemore como se tivesse ganhado um campeonato mundial.", "Finja que está morrendo de sono.", "Mostre sua melhor pose de fisiculturista.", "Explique como escovar os dentes como se fosse um professor universitário.", "Faça um vampiro tentando pedir pão na padaria.", "Imite um gato bravo.", "Imite um cachorro feliz.", "Faça um ET tentando aprender português.", "Faça um desfile de modelo por 15 segundos.", "Leia qualquer frase como se fosse um narrador de futebol.", "Faça uma entrevista imaginária com uma cadeira.", "Convença a sala de que uma banana é o melhor celular do mundo.", "Faça uma comemoração exagerada por tirar nota 10.", "Faça três poses diferentes sem rir.", "Passe o mico (escolha um colega).", "🛡️ Escapou! (não precisa pagar mico).", "👯 Dupla dinâmica (escolha alguém para fazer junto).", "🔄 Troca de balão (estoure outro balão).", "⭐ Mico em grupo (a sala inteira participa).", "Faça uma dança de vitória por 15 segundos.", "Fale seu nome como se fosse um locutor de estádio.", "Imite um personagem de desenho animado por 20 segundos.", "Invente um cumprimento secreto e ensine para a turma.", "Faça uma pose engraçada para uma foto imaginária."];
+const palette = [
+  ["#ff8787","#e03131"],["#74c0fc","#1971c2"],["#8ce99a","#2f9e44"],
+  ["#ffd43b","#f08c00"],["#c0a0ff","#7950f2"],["#ffa8a8","#f03e3e"],
+  ["#63e6be","#0ca678"],["#faa2c1","#d6336c"],["#91a7ff","#4263eb"]
+];
+let remaining = 40;
+const grid = document.getElementById("grid");
+const overlay = document.getElementById("overlay");
+const text = document.getElementById("text");
+
+function shuffle(a) {
+  const copy=[...a];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+
+function createBoard() {
+  grid.innerHTML="";
+  remaining=40;
+  const micos=shuffle(originalMicos);
+  micos.forEach((mico,i)=>{
+    const wrap=document.createElement("div");
+    wrap.className="balloon-wrap";
+    const b=document.createElement("button");
+    b.className="balloon";
+    const colors=palette[i%palette.length];
+    b.style.setProperty("--c1",colors[0]);
+    b.style.setProperty("--c2",colors[1]);
+    b.textContent=i+1;
+    b.setAttribute("aria-label","Balão "+(i+1));
+    b.addEventListener("click",(e)=>popBalloon(b,mico,e));
+    wrap.appendChild(b);
+    grid.appendChild(wrap);
+  });
+}
+
+function popBalloon(balloon,mico,event){
+  const r=balloon.getBoundingClientRect();
+  burst(r.left+r.width/2,r.top+r.height/2,getComputedStyle(balloon).getPropertyValue("--c1"));
+  balloon.classList.add("used");
+  remaining--;
+  setTimeout(()=>{
+    text.textContent=mico;
+    overlay.classList.add("show");
+    confetti();
+  },280);
+}
+
+function burst(x,y,color){
+  for(let i=0;i<18;i++){
+    const p=document.createElement("span");
+    p.className="pop-piece";
+    p.style.left=(x-10)+"px";p.style.top=(y-10)+"px";p.style.background=color;
+    const a=(Math.PI*2*i)/18, d=55+Math.random()*75;
+    p.style.setProperty("--x",Math.cos(a)*d+"px");
+    p.style.setProperty("--y",Math.sin(a)*d+"px");
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),650);
+  }
+}
+
+function confetti(){
+  const colors=["#ff6b6b","#ffd43b","#4dabf7","#69db7c","#b197fc","#ff922b"];
+  for(let i=0;i<70;i++){
+    const c=document.createElement("span");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.top=(-30-Math.random()*120)+"px";
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDelay=Math.random()*.35+"s";
+    c.style.transform="rotate("+Math.random()*180+"deg)";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1800);
+  }
+}
+
+document.getElementById("close").onclick=()=>overlay.classList.remove("show");
+overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.classList.remove("show")});
+document.getElementById("restart").onclick=()=>{
+  if(confirm("Deseja colocar todos os balões de volta e embaralhar os micos?")) createBoard();
+};
+document.getElementById("fullscreen").onclick=()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")overlay.classList.remove("show")});
+createBoard();
+</script>
+</body>
+</html>
